@@ -27,9 +27,12 @@ console = Console()
 
 class JARVIS:
     def __init__(self):
-        self.voice_ai = webscout.Julius(model="Gemini Flash", is_conversation=False, timeout=120)
-        self.text_ai = webscout.Julius(model="Gemini Flash", is_conversation=False, timeout=120)
-        self.agent = FunctionCallingAgent(tools=TOOLS)
+        self.proxy_manager = ProxyManager()
+        self.proxy_manager.start()
+
+        self.voice_ai = webscout.Julius(model="Gemini 1.5", is_conversation=False, timeout=120, proxies=self.proxy_manager.get_proxy())
+        self.text_ai = webscout.Julius(model="Gemini 1.5", is_conversation=False, timeout=120, proxies=self.proxy_manager.get_proxy())
+        self.agent = FunctionCallingAgent(tools=TOOLS, proxy_manager=self.proxy_manager)
         self.function_executor = FunctionExecutor(self)
         self.voicepods_tts = TTS.Voicepods()
         self.audio_recorder = STT()  # Initialize STT
@@ -84,7 +87,7 @@ class JARVIS:
         if hasattr(self.function_executor, f"execute_{function_name}"):
             try:
                 result = getattr(self.function_executor, f"execute_{function_name}")(arguments)
-                tool_result = f"Function: {function_name}, Result: {result}"
+                tool_result = f"User asked you: {user_input}. to answer it accurtly you called this Function: {function_name}, Result given by function: {result}"
                 self.JARVISConversation.add_message("Tools", tool_result)
 
                 ai_prompt = self.JARVISConversation.gen_complete_prompt(user_input)

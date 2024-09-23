@@ -40,7 +40,7 @@ class STT:
                         input=True,
                         frames_per_buffer=self.chunk)
 
-        # print("🎤 Listening... Speak now! 🗣️")
+        print("🎤 Listening... Speak now! 🗣️")
         frames = []
         silent_chunks = 0
         start_time = time.time()

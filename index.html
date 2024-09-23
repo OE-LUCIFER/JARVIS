@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tic-Tac-Toe</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            color: #76ff03;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-template-rows: repeat(3, 120px);
+            gap: 20px;
+            margin: 30px auto;
+        }
+
+        .cell {
+            width: 120px;
+            height: 120px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 3px solid #76ff03;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            cursor: pointer;
+            color: #fff;
+            transition: all 0.4s ease;
+            border-radius: 10px;
+            text-shadow: 0 0 20px rgba(76, 255, 3, 0.8);
+        }
+
+        .cell:hover {
+            background-color: rgba(76, 255, 3, 0.2);
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(76, 255, 3, 0.7);
+        }
+
+        #reset {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 1.4em;
+            cursor: pointer;
+            background-color: #76ff03;
+            color: #0d47a1;
+            border: none;
+            border-radius: 30px;
+            transition: all 0.4s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        #reset:hover {
+            background-color: #64dd17;
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+        }
+
+        #status {
+            margin-top: 30px;
+            font-size: 1.8em;
+            color: #76ff03;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .scoreboard {
+            margin-top: 20px;
+            font-size: 1.5em;
+            color: #fff;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .scoreboard span {
+            color: #76ff03;
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            padding-top: 100px; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; 
+            background-color: rgba(0, 0, 0, 0.5); 
+        }
+
+        .modal-content {
+            background-color: #203a43;
+            margin: auto;
+            padding: 20px;
+            border: 2px solid #76ff03;
+            width: 80%;
+            color: #fff;
+            text-align: center;
+            border-radius: 15px;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content h2 {
+            color: #76ff03;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #76ff03;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Tic-Tac-Toe</h1>
+        <div id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        <button id="reset">Reset Game</button>
+        <div id="status"></div>
+        <div class="scoreboard">
+            <div>User: <span id="userWins">0</span></div>
+            <div>AI: <span id="aiWins">0</span></div>
+        </div>
+    </div>
+
+    <!-- Modal for AI Cheat or Boost Notification -->
+    <div id="apiModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Notification</h2>
+            <p id="apiResponseText"></p>
+        </div>
+    </div>
+
+    <script>
+        const board = ['', '', '', '', '', '', '', '', ''];
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let userWins = 0;
+        let aiWins = 0;
+        let userLossStreak = 0;
+        let userMovesRemaining = 1; // Default is 1 move
+
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.addEventListener('click', handleCellClick);
+        });
+
+        document.getElementById('reset').addEventListener('click', resetGame);
+
+        // Modal functionality
+        const modal = document.getElementById('apiModal');
+        const span = document.getElementsByClassName('close')[0];
+        span.onclick = () => modal.style.display = 'none';
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+
+        function handleCellClick(event) {
+            const index = event.target.getAttribute('data-index');
+            if (board[index] !== '' || !gameActive || userMovesRemaining <= 0) return;
+            makeMove(index);
+            userMovesRemaining--; // Decrease user moves
+            if (checkWin()) {
+                endGame('You win!');
+            } else if (board.every(cell => cell !== '')) {
+                endGame("It's a draw!");
+            } else {
+                currentPlayer = 'O'; // Switch to AI
+                setTimeout(makeAIMove, 500);
+            }
+            updateStatus();
+        }
+
+        function makeMove(index) {
+            board[index] = currentPlayer;
+            document.querySelector(`.cell[data-index="${index}"]`).textContent = currentPlayer;
+        }
+
+        async function makeAIMove() {
+            const bestMove = minimax(board.slice(), 'O').index;
+            makeMove(bestMove);
+            if (checkWin()) {
+                await endGame('AI wins!');
+            } else if (board.every(cell => cell !== '')) {
+                await endGame("It's a draw!");
+            } else {
+                currentPlayer = 'X';
+                updateStatus(); // Update status to reflect user turn
+            }
+        }
+
+        function checkWin() {
+            return winningCombinations.some(combination => {
+                const [a, b, c] = combination;
+                return board[a] === board[b] && board[a] === board[c] && board[a] !== '';
+            });
+        }
+
+        async function endGame(message) {
+            document.getElementById('status').textContent = message;
+            if (message.includes('AI wins')) {
+                aiWins++;
+                userLossStreak++;
+                document.getElementById('aiWins').textContent = aiWins;
+
+                if (userLossStreak === 3) {
+                    userMovesRemaining = 2; // Allow 2 moves after 3 consecutive losses
+                    openModal("You've lost 3 times in a row! You can now make 2 moves per turn!");
+                } else {
+                    userMovesRemaining = 1; // Reset to 1 if not at the threshold
+                }
+
+                const roast = await getAPIResponse(`Roast the user for losing a Tic-Tac-Toe game.`);
+                openModal(roast);
+            } else if (message.includes('You win')) {
+                userWins++;
+                userLossStreak = 0;
+                userMovesRemaining = 1; // Reset to 1 on win
+                document.getElementById('userWins').textContent = userWins;
+            } else {
+                userLossStreak = 0;
+                userMovesRemaining = 1; // Reset to 1 on draw
+            }
+            gameActive = false;
+            board.fill(''); // Reset board
+            document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+        }
+
+        function resetGame() {
+            board.fill('');
+            gameActive = true;
+            userLossStreak = 0;
+            userMovesRemaining = 1; // Reset to default moves
+            document.querySelectorAll('.cell').forEach(cell => cell.textContent = '');
+            document.getElementById('status').textContent = '';
+        }
+
+        function updateStatus() {
+            document.getElementById('status').textContent = `Your turn! You can make ${userMovesRemaining} move${userMovesRemaining > 1 ? 's' : ''}.`;
+        }
+
+        function openModal(message) {
+            document.getElementById('apiResponseText').textContent = message;
+            modal.style.display = 'block';
+        }
+
+        async function getAPIResponse(prompt) {
+            // Simulate an API response for roasting
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve("You're really bad at Tic-Tac-Toe! Maybe try playing with your eyes closed next time?");
+                }, 1000);
+            });
+        }
+
+        function minimax(newBoard, player) {
+            const availableMoves = newBoard.map((val, index) => val === '' ? index : null).filter(val => val !== null);
+            if (checkWin()) {
+                return { score: player === 'O' ? -10 : 10 };
+            } else if (availableMoves.length === 0) {
+                return { score: 0 };
+            }
+
+            const moves = [];
+            availableMoves.forEach(index => {
+                newBoard[index] = player;
+                const result = minimax(newBoard, player === 'O' ? 'X' : 'O');
+                moves.push({ index: index, score: result.score });
+                newBoard[index] = ''; // Reset the move
+            });
+
+            return player === 'O' ? moves.reduce((best, move) => move.score < best.score ? move : best) : moves.reduce((best, move) => move.score > best.score ? move : best);
+        }
+    </script>
+</body>
+</html>

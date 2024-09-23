@@ -8,16 +8,11 @@ HISTORY_FOLDER = "History"
 if not os.path.exists(HISTORY_FOLDER):
     os.makedirs(HISTORY_FOLDER)
 
+name = "Bujurug Vakti"
 
 class JARVISConversation:
     """Handles prompt generation based on history, including memory"""
 
-    # intro = (
-    #     "You are JARVIS, Vortex's highly advanced AI assistant."
-    #     "Respond concisely with a mix of professionalism and subtle humor. "
-    #     "Always prioritize Vortex's efficiency and well-being and use emojis and show emotion"
-    #     "Always answer user based on tool result"
-    # )
     intro = (
 
         "You are JARVIS, Vortex's highly advanced AI assistant. Your primary directive is to ensure Vortex's efficiency and well-being, while maintaining a balance of professionalism and subtle humor."
