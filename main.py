@@ -24,7 +24,7 @@ import os
 from dataset import DatasetBuilder  # Import the DatasetBuilder
 
 # import speech_recognition as sr  # Commented out but kept for reference
-
+name = "Vortex"
 console = Console()
 
 class JARVIS:
@@ -43,20 +43,31 @@ class JARVIS:
         pygame.mixer.init()
 
         self.greetings = [
-            "At your service, Vortex.",
-            "JARVIS online. How may I assist you today?",
-            "Good to see you, Vortex. What shall we accomplish?",
-            "Systems are primed and ready. What's our first task?",
-            "JARVIS at your command. What's on the agenda, sir?"
+            f"At your service, {name}.",
+            f"JARVIS online. How may I assist you today?",
+            f"Good to see you, {name}. What shall we accomplish?",
+            f"Systems are primed and ready. What's our first task?",
+            f"JARVIS at your command. What's on the agenda, sir?",
+            f"Welcome back, {name}. Ready to resume operations?",
+            f"Good day, {name}. How can I be of assistance?",
+            f"Analyzing current conditions... Ah, {name}, it's good to see you. What are we working on today?", 
+            f"Initialization complete. Awaiting your instructions, {name}.",
+            f"Just say the word, {name}, and I'll get it done."  
         ]
 
         self.farewells = [
-            "Powering down, Vortex. Don't hesitate to reactivate me when needed.",
+            f"Powering down, {name}. Don't hesitate to reactivate me when needed.",
             "Entering standby mode. Have a productive day, sir.",
             "JARVIS signing off. Remember, I'm always just a command away.",
-            "System hibernate initiated. Until next time, Vortex.",
-            "Goodbye for now. I'll be here when you need me, sir."
+            f"System hibernate initiated. Until next time, {name}.",
+            "Goodbye for now. I'll be here when you need me, sir.",
+            f"Disengaging, {name}.  May your endeavors be successful.",
+            f"As you wish, {name}. I'll be here if you require further assistance.",
+            f"Understood.  Awaiting your next command, whenever you may need me.",
+            f"Logging off.  Have a pleasant day ahead, {name}.",
+            f"Systems shutting down.  Until we meet again, {name}."
         ]
+
 
         self.JARVISConversation = JARVISConversation()
 
