@@ -5,8 +5,6 @@ import re
 import subprocess
 import sys
 import webbrowser
-
-
 from typing import Dict, Any
 import requests
 import webscout
@@ -19,13 +17,112 @@ import pyautogui
 import speedtest
 import PyPDF2
 from webscout import PhindSearch as a
-
+import yaspin
+from html.parser import HTMLParser
 from functionhub import AlarmManager, Felo
 from pywhatkit import search, playonyt
 from AppOpener import close, open as appopen
 import keyboard
+import cv2
 
 from .autocoder import AutoCoder
+
+
+class TerminalFormatter(HTMLParser):
+    """
+    A custom HTML parser that converts HTML content to terminal-friendly formatted text
+    using ANSI escape codes.
+    """
+    def __init__(self):
+        super().__init__()
+        self.output = []
+        self.list_stack = []
+        self.ol_counters = []
+        self.bold = False
+        self.italic = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ['strong', 'b']:
+            self.output.append('\033[1m')  # Bold
+            self.bold = True
+        elif tag in ['em', 'i']:
+            self.output.append('\033[3m')  # Italic
+            self.italic = True
+        elif tag == 'br':
+            self.output.append('\n')
+        elif tag in ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+            self.output.append('\n')
+        elif tag == 'ul':
+            self.list_stack.append('ul')
+            self.output.append('\n')
+        elif tag == 'ol':
+            self.list_stack.append('ol')
+            self.ol_counters.append(1)
+            self.output.append('\n')
+        elif tag == 'li':
+            if self.list_stack:
+                if self.list_stack[-1] == 'ul':
+                    self.output.append('• ')  # Bullet point
+                elif self.list_stack[-1] == 'ol':
+                    number = self.ol_counters[-1]
+                    self.output.append(f'{number}. ')
+                    self.ol_counters[-1] += 1
+
+    def handle_endtag(self, tag):
+        if tag in ['strong', 'b']:
+            self.output.append('\033[0m')  # Reset
+            self.bold = False
+        elif tag in ['em', 'i']:
+            self.output.append('\033[0m')  # Reset
+            self.italic = False
+        elif tag in ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']:
+            self.output.append('\n')
+        elif tag == 'ul':
+            if self.list_stack and self.list_stack[-1] == 'ul':
+                self.list_stack.pop()
+                self.output.append('\n')
+        elif tag == 'ol':
+            if self.list_stack and self.list_stack[-1] == 'ol':
+                self.list_stack.pop()
+                self.ol_counters.pop()
+                self.output.append('\n')
+        elif tag == 'li':
+            self.output.append('\n')
+
+    def handle_data(self, data):
+        data = re.sub(r'\s+', ' ', data)
+        self.output.append(data)
+
+    def handle_entityref(self, name):
+        entity = f'&{name};'
+        char = html_entities.get(entity, entity)
+        self.output.append(char)
+
+    def handle_charref(self, name):
+        try:
+            if name.startswith('x') or name.startswith('X'):
+                char = chr(int(name[1:], 16))
+            else:
+                char = chr(int(name))
+            self.output.append(char)
+        except ValueError:
+            self.output.append(f'&#{name};')
+
+    def get_text(self):
+        return ''.join(self.output).strip()
+
+html_entities = {
+    '&quot;': '"',
+    '&apos;': "'",
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+}
+
+def html_to_terminal(html_content):
+    parser = TerminalFormatter()
+    parser.feed(html_content)
+    return parser.get_text()
 
 class FunctionExecutor:
     def __init__(self, jarvis_instance):
@@ -194,32 +291,63 @@ class FunctionExecutor:
 
 
 
+    def get(self, location):
+        """
+        Fetches weather data for the given location.
+
+        Args:
+            location (str): The location for which to fetch weather data.
+
+        Returns:
+            dict: A dictionary containing weather data if the request is successful,
+                otherwise a string indicating the error.
+        """
+        url = f"https://wttr.in/{location}?format=j1"
+
+        with yaspin(text="Fetching weather data...") as spinner:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                spinner.ok("✅ ")
+                return response.json()
+            except requests.exceptions.HTTPError as http_err:
+                spinner.fail("✗ ")
+                return f"HTTP error occurred: {http_err}"
+            except Exception as err:
+                spinner.fail("✗ ")
+                return f"An error occurred: {err}"
+
     def execute_get_weather(self, arguments: Dict[str, Any]) -> str:
         """Gets the current weather for a given location and returns a string."""
         location = arguments.get("location")
-        if location:
-            weather_data = webscout.weather.get(location)
-            if isinstance(weather_data, dict):
-                current_condition = weather_data.get("current_condition", [])
-                if current_condition:
-                    current_weather = current_condition[0]  # Assuming only one current condition
-                    description = current_weather.get("weatherDesc", [{}])[0].get("value", "Unknown")
-                    temperature = current_weather.get("temp_C", "Unknown")
-                    feels_like = current_weather.get("FeelsLikeC", "Unknown")
-                    humidity = current_weather.get("humidity", "Unknown")
-                    wind_speed = current_weather.get("windspeedKmph", "Unknown")
-                    return (
-                        f"The current weather in {location} is {description}. "
-                        f"The temperature is {temperature} degrees Celsius, "
-                        f"and it feels like {feels_like} degrees. "
-                        f"Humidity is {humidity}%, and the wind speed is {wind_speed} kmph."
-                    )
-                else:
-                    return f"I couldn't find current weather information for {location}. Please check the location and try again."
-            else:
-                return f"I couldn't get the weather for {location}. Please check the location and try again."
-        else:
-            return "Please provide a location." 
+        if not location:
+            return "Please provide a location."
+
+        try:
+            weather_data = self.get(location)
+            if isinstance(weather_data, str):
+                return weather_data
+
+            current_condition = weather_data.get("current_condition", [])
+            if not current_condition:
+                return f"I couldn't find current weather information for {location}. Please check the location and try again."
+
+            current_weather = current_condition[0]  # Assuming only one current condition
+            description = current_weather.get("weatherDesc", [{}])[0].get("value", "Unknown")
+            temperature = current_weather.get("temp_C", "Unknown")
+            feels_like = current_weather.get("FeelsLikeC", "Unknown")
+            humidity = current_weather.get("humidity", "Unknown")
+            wind_speed = current_weather.get("windspeedKmph", "Unknown")
+
+            return (
+                f"The current weather in {location} is {description}. "
+                f"The temperature is {temperature} degrees Celsius, "
+                f"and it feels like {feels_like} degrees. "
+                f"Humidity is {humidity}%, and the wind speed is {wind_speed} kmph."
+            )
+
+        except Exception as e:
+            return f"An error occurred while fetching the weather data: {str(e)}"
 
     def execute_send_email(self, arguments: Dict[str, Any]) -> str:
         """Sends an email and returns a confirmation message."""
@@ -604,7 +732,6 @@ class FunctionExecutor:
                 """)
                 script_text = response
 
-                # Prompt the model to generate an SEO-optimized blog post
                 response2 = model.chat(f"""
                 You are a professional blog writer.
 
@@ -685,3 +812,181 @@ class FunctionExecutor:
                     return autocoder_feedback # Return the output of the executed code
         else:
             return "Please provide a user request to generate and execute Python code."
+        
+    def execute_generate_ppt(self, arguments: Dict[str, Any]) -> str:
+        """Generates a presentation using the PresentationGPT API."""
+        topic = arguments.get("topic")
+        if not topic:
+            return "Please provide a topic for the presentation."
+
+        try:
+            # Define the URL
+            url = "https://generatepptv2-ascift6biq-uc.a.run.app/"
+
+            # Define the headers
+            headers = {
+                "accept": "application/json, text/plain, */*",
+                "accept-encoding": "gzip, deflate, br, zstd",
+                "accept-language": "en-US,en;q=0.9,en-IN;q=0.8",
+                "content-type": "application/json",
+                "dnt": "1",
+                "origin": "https://www.presentationgpt.com",
+                "priority": "u=1, i",
+                "referer": "https://www.presentationgpt.com/",
+                "sec-ch-ua": '"Chromium";v="128", "Not;A=Brand";v="24", "Microsoft Edge";v="128"',
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": '"Windows"',
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "cross-site",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0"
+            }
+
+            # Define the payload
+            payload = {
+                "id": "q46u3b4", 
+                "userInput": f"I want a presentation about {topic}",
+                "themeColor": "blue",
+                "backgroundImageUrl": "https://cdn.presentationgpt.com/backgrounds/fakurian_purple.jpg",
+                "model": "v1",
+                "forceGenerate": False
+            }
+
+            # Convert the payload to JSON
+            json_payload = json.dumps(payload)
+
+            # Make the POST request
+            response = requests.post(url, headers=headers, data=json_payload)
+
+            # Print the response content
+            response_json = response.json()
+
+            ppt_download_link = response_json.get("links", {}).get("web")
+            
+            if ppt_download_link:
+                return f"Presentation generated successfully! Download link: {ppt_download_link}"
+            else:
+                return "Error: Unable to generate presentation. Please try again later."
+
+        except Exception as e:
+            return f"Error generating presentation: {e}"
+        
+
+    def _capture_image(self):
+        """Captures an image from the default camera and saves it."""
+        camera = cv2.VideoCapture(0)
+        if not camera.isOpened():
+            return "Error: Could not open camera."
+
+        ret, frame = camera.read()
+        if not ret:
+            return "Error: Could not capture image."
+
+        image_path = "captured_image.jpg"  # You can customize the filename
+        cv2.imwrite(image_path, frame)
+        camera.release()
+        return image_path
+        
+    def generate_homeworkify_response(self, input_message, attachment_path=None):
+        url = "https://tutorai.me/api/generate-homeworkify-response"
+        headers = {
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br, zstd",
+            "Accept-Language": "en-US,en;q=0.9,en-IN;q=0.8",
+            "Cookie": (
+                "ARRAffinity=5ef5a1afbc0178c19fc7bc85047a2309cb69de3271923483302c69744e2b1d24; "
+                "ARRAffinitySameSite=5ef5a1afbc0178c19fc7bc85047a2309cb69de3271923483302c69744e2b1d24; "
+                "_ga=GA1.1.412867530.1726937399; "
+                "_clck=1kwy10j%7C2%7Cfpd%7C0%7C1725; "
+                "_clsk=1cqd2q1%7C1726937402133%7C1%7C1%7Cm.clarity.ms%2Fcollect; "
+                "_ga_0WF5W33HD7=GS1.1.1726937399.1.1.1726937459.0.0.0"
+            ),
+            "DNT": "1",
+            "Origin": "https://tutorai.me",
+            "Priority": "u=1, i",
+            "Referer": "https://tutorai.me/homeworkify?ref=taaft&utm_source=taaft&utm_medium=referral",
+            "Sec-Ch-Ua": '"Microsoft Edge";v="129", "Not=A?Brand";v="8", "Chromium";v="129"',
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": '"Windows"',
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0"
+            ),
+        }
+        form_data = {
+            "inputMessage": input_message,
+            "attachmentsCount": "1" if attachment_path else "0"
+        }
+        files = {}
+        if attachment_path:
+            if not os.path.isfile(attachment_path):
+                print(f"Error: The file '{attachment_path}' does not exist.")
+                return
+            try:
+                files["attachment0"] = (os.path.basename(attachment_path), open(attachment_path, 'rb'), 'image/png')
+            except Exception as e:
+                print(f"Error opening the file: {e}")
+                return
+        try:
+            with requests.post(url, headers=headers, data=form_data, files=files, stream=True) as response:
+                response.raise_for_status()
+                response_chunks = []
+                json_str = ''
+                # print("Receiving response...") # Remove this print statement
+                for chunk in response.iter_content(chunk_size=1024, decode_unicode=True):
+                    if chunk:
+                        response_chunks.append(chunk)
+                        # print(chunk, end='', flush=True)  # Remove this print statement
+                json_str = ''.join(response_chunks)
+                try:
+                    response_data = json.loads(json_str)
+                except json.JSONDecodeError as json_err:
+                    print(f"\nError decoding JSON: {json_err}")
+                    return
+                homeworkify_html = response_data.get("homeworkifyResponse", "")
+                if not homeworkify_html:
+                    print("\nNo 'homeworkifyResponse' found in the response.")
+                    return
+                clean_text = html_to_terminal(homeworkify_html)
+                # print("\n\nRequest was successful!")  # Remove this print statement
+                # print("Clean Response Text:\n")  # Remove this print statement
+                # print(clean_text)  # Remove this print statement
+                return clean_text
+        except requests.exceptions.HTTPError as http_err:
+            print(f"\nHTTP error occurred: {http_err}")
+            return f"Error: HTTP error occurred: {http_err}"  # Return error message
+        except requests.exceptions.RequestException as req_err:
+            print(f"\nRequest exception occurred: {req_err}")
+            return f"Error: Request exception occurred: {req_err}"  # Return error message
+        except Exception as err:
+            print(f"\nAn unexpected error occurred: {err}")
+            return f"Error: An unexpected error occurred: {err}"  # Return error message
+        finally:
+            if attachment_path and "attachment0" in files:
+                files["attachment0"][1].close()
+
+    def execute_vision_chat(self, arguments: Dict[str, Any]) -> str:
+        """
+        Captures an image from the camera or uses a provided image,
+        sends a request to Homeworkify, and returns the response.
+        """
+        input_message = arguments.get("input_message")
+        attachment_path = arguments.get("attachment_path")
+
+        if not attachment_path:
+            attachment_path = self._capture_image()
+            if "Error" in attachment_path:
+                return attachment_path
+
+        if attachment_path or input_message:
+            response = self.generate_homeworkify_response(input_message, attachment_path)
+            if response:
+                return f"Sir, based on my analysis of the image you provided, here's what I see:\n\n{response}"
+            else:
+                return "Error: Homeworkify request failed."
+        else:
+            return "Please provide either an input message or capture an image."

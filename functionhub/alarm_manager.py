@@ -19,7 +19,8 @@ from typing import Dict, Any, List
 import pygame
 import io
 import os
-from .TTS import Voicepods
+
+import functionhub
 
 
 pygame.mixer.init()
@@ -37,7 +38,7 @@ class AlarmManager:
         self.schedules = self.load_schedules()
         self.thread = None
         self.running = False
-        self.voicepods_tts = Voicepods()
+        self.voicepods_tts = functionhub.TTS.Voicepods()
 
     def load_alarms(self):
         if os.path.exists(ALARM_FILE):
@@ -125,7 +126,7 @@ class AlarmManager:
 if __name__ == "__main__":
     alarm_manager = AlarmManager()
     alarm_manager.add_alarm("2024-9-09 12:20:00", "Time to wake up!")
-    alarm_manager.add_schedule("Lunch Reminder", "12:41", "It's lunchtime!")
+    alarm_manager.add_schedule("Lunch Reminder", "12:25", "It's lunchtime!")
     alarm_manager.start()
 
 """

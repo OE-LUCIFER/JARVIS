@@ -21,6 +21,8 @@ import pygame
 import random
 import os
 
+from dataset import DatasetBuilder  # Import the DatasetBuilder
+
 # import speech_recognition as sr  # Commented out but kept for reference
 
 console = Console()
@@ -36,7 +38,7 @@ class JARVIS:
         self.function_executor = FunctionExecutor(self)
         self.voicepods_tts = TTS.Voicepods()
         self.audio_recorder = STT()  # Initialize STT
-        # self.recognizer = sr.Recognizer()  # Commented out but kept for reference
+        self.dataset_builder = DatasetBuilder() 
 
         pygame.mixer.init()
 
@@ -84,15 +86,48 @@ class JARVIS:
         function_name = response.get("tool_name")
         arguments = response.get("tool_input", {})
 
+        tool_called = None  # Initialize tool_called
+        tool_output = None # Initialize tool_output
+
         if hasattr(self.function_executor, f"execute_{function_name}"):
             try:
+                # Call the execute function through the function_executor
                 result = getattr(self.function_executor, f"execute_{function_name}")(arguments)
-                tool_result = f"User asked you: {user_input}. to answer it accurtly you called this Function: {function_name}, Result given by function: {result}"
+                tool_output = result  # Capture the tool output
+                
+                # Find the tool definition from TOOLS
+                tool_called = next((tool for tool in TOOLS if tool['function']['name'] == function_name), None)
+
+                tool_result = f"""
+            You are JARVIS, Vortex's highly advanced AI assistant. You are tasked with understanding user requests and providing helpful responses.
+
+            **User Request:** {user_input}
+
+            **Tool Used:** {function_name}
+
+            **Tool Output:** {result}
+
+            **Instructions:**
+
+            - Use the tool output to provide a concise and informative response to the user. 
+            - Tailor your response to be helpful and relevant to the user's original request.
+            - Use the tool output to add specific details and insights to your answer.
+            - If the tool output is not directly relevant to the user's request, provide a brief explanation of why.
+
+            **Example Response:**
+
+            (Based on a hypothetical tool output)
+            "Based on the weather forecast from the 'get_weather' tool, the temperature in London today is 15 degrees Celsius with sunny skies.  It's a great day to explore the city!"
+
+            **Your Response:** 
+            """
                 self.JARVISConversation.add_message("Tools", tool_result)
 
                 ai_prompt = self.JARVISConversation.gen_complete_prompt(user_input)
-
                 ai_response = self.voice_ai.chat(ai_prompt) if input_mode == "voice" else self.text_ai.chat(ai_prompt)
+
+                # Add datapoint to the dataset
+                self.dataset_builder.add_datapoint(user_input, "", tool_called, tool_output, ai_response)
 
                 self.JARVISConversation.add_message("JARVIS", ai_response)
 
@@ -190,9 +225,9 @@ if __name__ == "__main__":
     mode = input("Choose interaction mode (voice/text): ").strip().lower()
     jarvis.clear_screen()
 
-    if mode == "voice":
+    if mode == "voice" or mode =="v" or mode == "audio":
         jarvis.run_voice_mode()
-    elif mode == "text":
+    elif mode == "text" or mode == "t" or mode == "txt":
         jarvis.run_text_mode()
     else:
         print("Invalid mode detected. Defaulting to text mode, sir.")

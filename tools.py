@@ -14,7 +14,14 @@ TOOLS = [
         },
         "required": ["query"]
       }
-    }
+    },
+    "phrases": [
+      "search the web for",
+      "google search",
+      "find information about",
+      "look up",
+      "research"
+    ]
   },
   {
     "type": "function",
@@ -31,7 +38,13 @@ TOOLS = [
             },
             "required": ["app_name"]
         }
-    }
+    },
+    "phrases": [
+      "open application",
+      "launch app",
+      "start",
+      "open"
+    ]
   },
   {
       "type": "function",
@@ -48,7 +61,13 @@ TOOLS = [
               },
               "required": ["app_name"]
           }
-      }
+      },
+      "phrases": [
+        "close application",
+        "shut down app",
+        "exit",
+        "quit"
+      ]
   },
   {
       "type": "function",
@@ -65,7 +84,13 @@ TOOLS = [
               },
               "required": ["query"]
           }
-      }
+      },
+      "phrases": [
+        "play YouTube video",
+        "find on YouTube",
+        "watch on YouTube",
+        "search YouTube for"
+      ]
   },
   # {
   #     "type": "function",
@@ -82,7 +107,15 @@ TOOLS = [
   #             },
   #             "required": ["command"]
   #         }
-  #     }
+  #     },
+  #     "phrases": [
+  #       "mute the system",
+  #       "unmute the system",
+  #       "turn the volume down",
+  #       "minimize all windows",
+  #       "turn the volume up",
+  #       "shut down the computer"
+  #     ]
   # },
   {
     "type": "function",
@@ -99,7 +132,14 @@ TOOLS = [
         },
         "required": ["url"]
       }
-    }
+    },
+    "phrases": [
+      "open website",
+      "go to website",
+      "visit website",
+      "open URL",
+      "navigate to" 
+    ]
   },
   {
     "type": "function",
@@ -116,7 +156,16 @@ TOOLS = [
         },
         "required": ["question"]
       }
-    }
+    },
+    "phrases": [
+      "answer a question",
+      "tell me about",
+      "explain",
+      "what is",
+      "who is", 
+      "how to",
+      "define"
+    ]
   },
   {
     "type": "function",
@@ -133,7 +182,13 @@ TOOLS = [
         },
         "required": ["location"]
       }
-    }
+    },
+    "phrases": [
+      "get weather",
+      "what's the weather in",
+      "weather forecast for",
+      "check weather"
+    ]
   },
   {
     "type": "function",
@@ -158,7 +213,13 @@ TOOLS = [
         },
         "required": ["to_email", "subject", "body"]
       }
-    }
+    },
+    "phrases": [
+      "send email",
+      "email someone",
+      "send a message to",
+      "compose an email"
+    ]
   },
   {
     "type": "function",
@@ -179,7 +240,13 @@ TOOLS = [
         },
         "required": ["reminder_time", "message"]
       }
-    }
+    },
+    "phrases": [
+      "set reminder",
+      "remind me to",
+      "create a reminder",
+      "set an alert"
+    ]
   },
   {
     "type": "function",
@@ -190,7 +257,13 @@ TOOLS = [
         "type": "object",
         "properties": {}
       }
-    }
+    },
+    "phrases": [
+      "what time is it",
+      "get current time",
+      "tell me the time",
+      "what's the time"
+    ]
   },
   {
     "type": "function",
@@ -201,7 +274,13 @@ TOOLS = [
         "type": "object",
         "properties": {}
       }
-    }
+    },
+    "phrases": [
+      "take screenshot",
+      "capture screen",
+      "screenshot",
+      "snapshot"
+    ]
   },
   {
     "type": "function",
@@ -218,7 +297,14 @@ TOOLS = [
         },
         "required": ["command"]
       }
-    }
+    },
+    "phrases": [
+      "play music",
+      "pause music",
+      "next track",
+      "previous track",
+      "stop music"
+    ]
   },
   {
     "type": "function",
@@ -235,7 +321,13 @@ TOOLS = [
         },
         "required": ["topic"]
       }
-    }
+    },
+    "phrases": [
+      "get news",
+      "latest news on",
+      "news headlines about",
+      "what's happening in" 
+    ]
   },
   {
     "type": "function",
@@ -252,7 +344,14 @@ TOOLS = [
         },
         "required": ["topic"]
       }
-    }
+    },
+    "phrases": [
+      "research topic",
+      "deep dive into",
+      "learn more about",
+      "investigate",
+      "find information on"
+    ]
   },
   {
     "type": "function",
@@ -269,7 +368,14 @@ TOOLS = [
         },
         "required": ["description"]
       }
-    }
+    },
+    "phrases": [
+      "generate image",
+      "create image from text",
+      "text to image",
+      "visualize", 
+      "imagine"
+    ]
   },
   {
     "type": "function",
@@ -280,7 +386,13 @@ TOOLS = [
         "type": "object",
         "properties": {},
       }
-    }
+    },
+    "phrases": [
+      "test internet speed",
+      "check internet connection",
+      "speed test",
+      "how fast is my internet"
+    ]
   },
   {
     "type": "function",
@@ -297,7 +409,13 @@ TOOLS = [
         },
         "required": ["url"]
       }
-    }
+    },
+    "phrases": [
+      "summarize website", 
+      "get summary of webpage",
+      "tldr",
+      "summarize this URL"
+    ]
   },
   {
     "type": "function",
@@ -314,7 +432,12 @@ TOOLS = [
         },
         "required": ["pdf_path"]
       }
-    }
+    },
+    "phrases": [
+      "summarize PDF",
+      "get summary of PDF",
+      "tldr this PDF"
+    ]
   },
   {
     "type": "function",
@@ -331,7 +454,12 @@ TOOLS = [
         },
         "required": ["video_url"]
       }
-    }
+    },
+    "phrases": [
+      "summarize YouTube video",
+      "get summary of YouTube video", 
+      "tldr this YouTube video"
+    ]
   },
   {
     "type": "function",
@@ -352,7 +480,13 @@ TOOLS = [
         },
         "required": ["url", "question"]
       }
-    }
+    },
+    "phrases": [
+      "ask website",
+      "question website",
+      "chat with website",
+      "get information from website"
+    ]
   },
   {
     "type": "function",
@@ -373,7 +507,13 @@ TOOLS = [
         },
         "required": ["time"]
       }
-    }
+    },
+    "phrases": [
+      "set alarm",
+      "wake me up at",
+      "create an alarm", 
+      "set a timer" 
+    ]
   },
   {
     "type": "function",
@@ -403,7 +543,13 @@ TOOLS = [
         },
         "required": ["name", "time", "message"]
       }
-    }
+    },
+    "phrases": [
+      "set schedule",
+      "schedule a task",
+      "create a schedule",
+      "schedule an event"
+    ]
   },
   {
     "type": "function",
@@ -420,7 +566,13 @@ TOOLS = [
         },
         "required": ["name"]
       }
-    }
+    },
+    "phrases": [
+      "remove schedule",
+      "delete schedule",
+      "cancel schedule",
+      "unschedule" 
+    ]
   },
   {
     "type": "function",
@@ -431,7 +583,13 @@ TOOLS = [
         "type": "object",
         "properties": {}
       }
-    }
+    },
+    "phrases": [
+      "list alarms", 
+      "show alarms",
+      "what alarms are set",
+      "my alarms"
+    ]
   },
   {
     "type": "function",
@@ -442,7 +600,13 @@ TOOLS = [
         "type": "object",
         "properties": {}
       }
-    }
+    },
+    "phrases": [
+      "list schedules",
+      "show schedules",
+      "what schedules are set", 
+      "my schedules"
+    ]
   },
   {
     "type": "function",
@@ -459,7 +623,12 @@ TOOLS = [
         },
         "required": ["video_url"]
       }
-    }
+    },
+    "phrases": [
+      "convert YouTube to blog",
+      "YouTube to blog post",
+      "make a blog from YouTube" 
+    ]
   },
   {
       "type": "function",
@@ -481,7 +650,13 @@ TOOLS = [
               },
               "required": ["topic"]
           }
-      }
+      },
+      "phrases": [
+        "generate PowerPoint",
+        "create presentation", 
+        "make a slideshow", 
+        "prepare a presentation"
+      ]
   },
   {
         "type": "function",
@@ -496,9 +671,42 @@ TOOLS = [
                         "description": "The user's request for the code to be written and executed (e.g., 'Take a screenshot and save it to the desktop')."
                     }
                 },
-                "required": ["user_request"]  # "user_request" is required
+                "required": ["user_request"] 
             }
-        }
-    }
-
+        },
+        "phrases": [
+          "execute Python code",
+          "run Python script",
+          "write and run Python",
+          "code in Python" 
+        ]
+    },
+    {
+    "type": "function",
+    "function": {
+      "name": "vision_chat",
+      "description": "It is used for vision analysis or vision model with an image path. Sends a request to Homeworkify API for image analysis or text-based questions. You can provide an image attachment along with the question user has asked.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "input_message": {
+            "type": "string",
+            "description": "The text message or question to send to Homeworkify. This is required"
+          },
+          "attachment_path": {
+            "type": "string",
+            "description": "The path to the image attachment (e.g., 'captured_image.jpg') This is optional if no filepath is given by the user just make it None"
+          }
+        },
+        "required": ["input_message"]
+      }
+    },
+    "phrases": [
+      "analyze image",
+      "ask about this image",
+      "what's in this picture",
+      "describe this image",
+      "vision analysis"
+    ]
+  }
 ]
