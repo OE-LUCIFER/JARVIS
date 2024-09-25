@@ -95,16 +95,10 @@ Got ideas? Found a bug? Feel free to open issues and submit PRs. We’re a commu
 
 ---
 
-## 📄 **License**
-
-This project is licensed under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0).
-
-And yeah, JARVIS is **FREE FOREVER**. Whether it’s basic tasks or self-learning coming soon, **we got you**.
-
 ---
 # 🏆 **Our Achievements: Firsts in the AI World** 🏅
 
-### 🔥 **What We’ve Achieved: The FIRST to...**
+## 🔥 **What We’ve Achieved: The FIRST to...**
 
 - **First on YouTube to Use Function Calling in a Voice Assistant**  
   We didn’t just copy-paste code; we **built our function-calling system from scratch**, making JARVIS dynamic, flexible, and able to handle tasks like a true AI.
@@ -138,3 +132,9 @@ And yeah, JARVIS is **FREE FOREVER**. Whether it’s basic tasks or self-learnin
   Soon, JARVIS will incorporate emotion-aware models like **Nakshatra** into its responses, allowing it to hold even deeper, more nuanced conversations that mimic real human emotions.
 
 ---
+
+## 📄 **License**
+
+This project is licensed under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0).
+
+And yeah, JARVIS is **FREE FOREVER**. Whether it’s basic tasks or self-learning coming soon, **we got you**.
