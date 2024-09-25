@@ -55,10 +55,10 @@ This architecture promotes modularity, making it easy to add new features and to
      ```
 2. **Clone the Repository:**
    ```bash
-   git clone https://github.com/[YourGitHubUsername]/JARVIS.git
+   git clone https://github.com/OE-LUCIFER/JARVIS.git
    ```
 3. **Configure APIs:**  You will need to obtain API keys for various services used by JARVIS (e.g., Homeworkify, Voicepods). Replace placeholders in the code with your actual API keys.
-4. **Run JARVIS:**
+4. **Run JARVIS:**4. **Run JARVIS:**
    ```bash
    python main.py
    ```
@@ -77,11 +77,3 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Disclaimer
 
 This project is provided "as is" without any warranty. Use at your own risk. The developer is not responsible for any issues or damages arising from the use of this software.  This project is intended for educational purposes.
-
-
-**Before pushing to GitHub:**
-
-1.  **Create a `LICENSE` file:** Add the Apache License 2.0 text to a file named `LICENSE` in the root of your repository. You can find the license text online by searching for "Apache License 2.0."
-2.  **Create a `requirements.txt` file:** List all the Python packages your project requires in a file named `requirements.txt`. You can create this file using the command: `pip freeze > requirements.txt`.  Make sure all necessary packages are included.  
-
-Replace `[YourGitHubUsername]` with your actual GitHub username.  This README provides a comprehensive overview of your JARVIS project and will be very helpful for anyone who wants to understand, use, or contribute to your project.
