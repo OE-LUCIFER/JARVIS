@@ -14,6 +14,28 @@ JARVIS is *not your regular voice assistant*! Built on cutting-edge **Function-C
 - **Built-in Privacy Mode Coming Soon:** Your data? **Your rules.** We’re working on local models to run **offline**, so no more internet dependency for sensitive tasks. Tools requiring internet will still work, but the AI's main brain will be fully offline, ensuring complete privacy.
 
 ---
+## 🚀 **Get Started with JARVIS**
+
+1. **Prerequisites**:
+   - Python 3.9+ 
+   - `pip` (Python package manager)
+   - Install dependencies:
+     ```bash
+     pip install -r requirements.txt
+     ```
+2. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/OE-LUCIFER/JARVIS.git
+   ```
+3. **API Setup**:
+   - Replace placeholder API keys (for vision tools, voice pods, etc.) with your actual keys. 
+4. **Run JARVIS**:
+   ```bash
+   python main.py
+   ```
+   Choose between voice or text modes (voice needs extra setup).
+   
+---
 
 ## 🔥 **JARVIS Features**
 
@@ -56,28 +78,7 @@ It’s modular, so adding new features or tools is as simple as modifying `tools
 
 ---
 
-## 🚀 **Get Started with JARVIS**
 
-1. **Prerequisites**:
-   - Python 3.9+ 
-   - `pip` (Python package manager)
-   - Install dependencies:
-     ```bash
-     pip install -r requirements.txt
-     ```
-2. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/OE-LUCIFER/JARVIS.git
-   ```
-3. **API Setup**:
-   - Replace placeholder API keys (for vision tools, voice pods, etc.) with your actual keys. 
-4. **Run JARVIS**:
-   ```bash
-   python main.py
-   ```
-   Choose between voice or text modes (voice needs extra setup).
-   
----
 
 ## ⚡ **Local Models + Self-Learning COMING SOON!**
 We’re working on integrating **local AI models** and **self-learning capabilities** into JARVIS, making it the world's FIRST AGI-level AI assistant running models like HelpingAI offline! This ensures **full privacy** (local processing) and offline functionality for more advanced tools.
