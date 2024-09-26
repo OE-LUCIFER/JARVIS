@@ -1,5 +1,5 @@
 # JARVIS: Your All-in-One Advanced AI Sidekick 🤖🚀  
-*(Made by HelpingAI’s Developer – Always Free, Always Evolving)*
+*(Made by HelpingAI’s Developer – Always Free, Always Evolving, Also made by Anonymous Coder)*
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)  
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/OE-LUCIFER/JARVIS)
