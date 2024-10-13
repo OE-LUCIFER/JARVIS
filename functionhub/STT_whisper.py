@@ -8,6 +8,10 @@ Follow me on:
 GitHub: https://github.com/OE-LUCIFER
 HuggingFace: https://huggingface.co/OEvortex
 Instagram: https://www.instagram.com/oevortex/
+
+Follow Anonymous Coder/Artist on:
+Telegram: https://t.me/ANONYMOUS_56788
+Github: https://github.com/AnonymousCoderArtist
 """
 
 import pyaudio
